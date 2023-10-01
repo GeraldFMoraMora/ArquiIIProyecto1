@@ -5,8 +5,8 @@
 #include <chrono>
 #include <benchmark/benchmark.h>
 
-const int numRows = 1000;
-const int numCols = 1000;
+const int numRows = 4;
+const int numCols = 4;
 
 struct AlignedRow {
   std::vector<int> data;
