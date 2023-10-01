@@ -3,6 +3,7 @@
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <benchmark/benchmark.h>
 
 void work(std::atomic<int>& a) {
   for(int i = 0; i < 100000; ++i) {
@@ -10,7 +11,7 @@ void work(std::atomic<int>& a) {
   }
 }
 
-void singleThread() {
+void single_thread() {
   // Create a single atomic integer
   std::atomic<int> a;
   a = 0;
@@ -24,7 +25,14 @@ void singleThread() {
   std::cout << "Address of atomic<int> a - " << a << '\n';
 }
 
-void directSharing() {
+static void singleThread(benchmark::State& s) {
+  while (s.KeepRunning()) {
+    single_thread();    
+  }
+}
+BENCHMARK(singleThread)->Unit(benchmark::kMillisecond);
+
+void direct_sharing() {
   // Create a single atomic integer
   std::atomic<int> a;
   a = 0;
@@ -44,7 +52,14 @@ void directSharing() {
   std::cout << "Address of atomic<int> a - " << a << '\n';
 }
 
-void falseSharing() {
+static void directSharing(benchmark::State& s) {
+  while (s.KeepRunning()) {
+    direct_sharing();    
+  }
+}
+BENCHMARK(directSharing)->Unit(benchmark::kMillisecond);
+
+void false_sharing() {
   // Create a single atomic integer
   std::atomic<int> a;
   a = 0;
@@ -76,12 +91,19 @@ void falseSharing() {
   std::cout << "Address of atomic<int> d - " << d << '\n';
 }
 
+static void falseSharing(benchmark::State& s) {
+  while (s.KeepRunning()) {
+    false_sharing();    
+  }
+}
+BENCHMARK(falseSharing)->Unit(benchmark::kMillisecond);
+
 struct alignas(64) AlignedType {
   AlignedType() { val = 0; }
   std::atomic<int> val;
 };
 
-void noSharing() {
+void no_sharing() {
   AlignedType a{};
   AlignedType b{};
   AlignedType c{};
@@ -112,17 +134,22 @@ void noSharing() {
   std::cout << "Address of atomic<int> d - " << &e << '\n';
   std::cout << "Address of atomic<int> d - " << e.val << '\n';
 }
+static void noSharing(benchmark::State& s) {
+  while (s.KeepRunning()) {
+    no_sharing();    
+  }
+}
+BENCHMARK(noSharing)->Unit(benchmark::kMillisecond);
 
 void cores_calculation() {
     unsigned int numCores = std::thread::hardware_concurrency();
     std::cout << "Número de núcleos de CPU: " << numCores << std::endl;
 }
 
-int main() {
-  //singleThread();  // Llama a la función para ejecutar el trabajo en un solo hilo
-  //directSharing();
-  falseSharing();
-  //noSharing();
-  cores_calculation();
-  return 0;
-}
+BENCHMARK_MAIN();
+
+//int main() {
+  //false_sharing();
+  //cores_calculation();
+  //return 0;
+//}
