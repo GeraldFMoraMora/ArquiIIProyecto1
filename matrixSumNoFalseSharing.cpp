@@ -8,8 +8,7 @@
 const int numRows = 1000;
 const int numCols = 1000;
 
-// Alinea cada fila de la matriz en un límite de caché
-struct alignas(64) AlignedRow {
+struct AlignedRow {
   std::vector<int> data;
 
   AlignedRow() : data(numCols, 1) {}
@@ -17,23 +16,31 @@ struct alignas(64) AlignedRow {
 
 std::vector<AlignedRow> matrix(numRows);
 
-void sumRow(int row, std::atomic<int>& result) {
+void sumRows(int startRow, int endRow, std::atomic<int>& result) {
   int sum = 0;
-  for (int j = 0; j < numCols; ++j) {
-    sum += matrix[row].data[j];
+  for (int i = startRow; i < endRow; ++i) {
+    for (int j = 0; j < numCols; ++j) {
+      sum += matrix[i].data[j];
+    }
   }
   result += sum;
 }
 
 void no_false_sharing_sum() {
-  std::vector<std::thread> threads(numRows);
+  const int numThreads = std::thread::hardware_concurrency();
+  std::vector<std::thread> threads(numThreads);
   std::atomic<int> totalSum(0);
 
-  for (int i = 0; i < numRows; ++i) {
-    threads[i] = std::thread([&]() { sumRow(i, totalSum); });
+  const int rowsPerThread = numRows / numThreads;
+  int startRow = 0;
+
+  for (int i = 0; i < numThreads; ++i) {
+    int endRow = startRow + rowsPerThread;
+    threads[i] = std::thread([&]() { sumRows(startRow, endRow, totalSum); });
+    startRow = endRow;
   }
 
-  for (int i = 0; i < numRows; ++i) {
+  for (int i = 0; i < numThreads; ++i) {
     threads[i].join();
   }
 
@@ -42,7 +49,7 @@ void no_false_sharing_sum() {
 
 static void noFalseSharingSolution(benchmark::State& s) {
   while (s.KeepRunning()) {
-    no_false_sharing_sum();    
+    no_false_sharing_sum();
   }
 }
 BENCHMARK(noFalseSharingSolution)->Unit(benchmark::kMillisecond);
