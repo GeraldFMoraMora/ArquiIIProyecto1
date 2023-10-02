@@ -53,6 +53,7 @@ void no_false_sharing() {
   for (int i = 0; i < numThreads; ++i) {
     threads[i].join();
   }
+  //std::cout << "Total sum: " << totalSum << std::endl;
 }
 
 static void noFalseSharingSolution(benchmark::State& s) {
