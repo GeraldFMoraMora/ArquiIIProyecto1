@@ -5,46 +5,44 @@
 #include <chrono>
 #include <benchmark/benchmark.h>
 
-const int numRows = 4;
-const int numCols = 4;
+const int numRows = 100;
+const int numCols = 100;
+std::vector<std::vector<int>> matrix(numRows, std::vector<int>(numCols, 1));
 
-struct AlignedRow {
-  std::vector<int> data;
-
-  AlignedRow() : data(numCols, 1) {}
-};
-
-std::vector<AlignedRow> matrix(numRows);
-
-void sumRows(int startRow, int endRow, std::atomic<int>& result) {
+void sumRow(int startRow, std::atomic<int>& resultRowSum) {
   int sum = 0;
-  for (int i = startRow; i < endRow; ++i) {
-    for (int j = 0; j < numCols; ++j) {
-      sum += matrix[i].data[j];
-    }
+  for (int j = 0; j < numCols; ++j) {
+    sum += matrix[startRow][j];
   }
-  result += sum;
+  resultRowSum += sum;
 }
 
-void no_false_sharing_sum() {
-  const int numThreads = std::thread::hardware_concurrency();
-  std::vector<std::thread> threads(numThreads);
-  std::atomic<int> totalSum(0);
+struct alignas(64) AlignedType {
+  AlignedType() { val = 0; }
+  std::atomic<int> val;
+};
 
-  const int rowsPerThread = numRows / numThreads;
-  int startRow = 0;
+void no_false_sharing_sum() {
+  std::vector<std::thread> threads(numRows);// 4 Threads
+  std::atomic<int> totalSum(0);
+  std::vector<AlignedType> sumTotalVec(numRows);
+
+  int numThreads = numRows;
 
   for (int i = 0; i < numThreads; ++i) {
-    int endRow = startRow + rowsPerThread;
-    threads[i] = std::thread([&]() { sumRows(startRow, endRow, totalSum); });
-    startRow = endRow;
+    threads[i] = std::thread([i, &sumTotalVec, &totalSum]() { sumRow(i, sumTotalVec[i].val); });
   }
 
   for (int i = 0; i < numThreads; ++i) {
     threads[i].join();
   }
 
-  std::cout << "Total sum: " << totalSum << std::endl;
+  for (int i = 0; i < numRows; ++i) {
+    totalSum+=sumTotalVec[i].val.load();
+    //std::cout << "Address of atomic<int> - " << &sumTotalVec[i] << '\n';
+  }
+
+  //std::cout << "Total sum: " << totalSum << std::endl;
 }
 
 static void noFalseSharingSolution(benchmark::State& s) {

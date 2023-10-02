@@ -5,8 +5,8 @@
 #include <chrono>
 #include <benchmark/benchmark.h>
 
-const int numRows = 4;
-const int numCols = 4;
+const int numRows = 100;
+const int numCols = 100;
 std::vector<std::vector<int>> matrix(numRows, std::vector<int>(numCols, 1));
 
 void sumRow(int startRow, std::atomic<int>& resultRowSum) {
@@ -36,10 +36,10 @@ void false_sharing() {
 
   for (int i = 0; i < numRows; ++i) {
     totalSum+=sumTotalVec[i];
-    std::cout << "Address of atomic<int> a - " << &sumTotalVec[i] << '\n';
+    //std::cout << "Address of atomic<int> - " << &sumTotalVec[i] << '\n';
   }
 
-  std::cout << "Total sum: " << totalSum << std::endl;
+  //std::cout << "Total sum: " << totalSum << std::endl;
 }
 
 static void falseSharingBench(benchmark::State& s) {
