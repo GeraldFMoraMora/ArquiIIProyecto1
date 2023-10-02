@@ -7,12 +7,21 @@
 
 const int numRows = 100;
 const int numCols = 100;
-std::vector<std::vector<int>> matrix(numRows, std::vector<int>(numCols, 1));
 
-void sumRow(int startRow, std::atomic<int>& resultRowSum) {
+struct alignas(64) AlignedRow {
+  std::vector<int> data;
+
+  AlignedRow() : data(numCols, 1) {}
+};
+
+std::vector<AlignedRow> matrix(numRows);
+
+void sumRow(int startRow, int endRow, std::atomic<int>& resultRowSum) {
   int sum = 0;
-  for (int j = 0; j < numCols; ++j) {
-    sum += matrix[startRow][j];
+  for (int i = startRow; i <= endRow; ++i) {
+    for (int j = 0; j < numCols; ++j) {
+        sum += matrix[i].data[j];
+    }
   }
   resultRowSum += sum;
 }
@@ -22,32 +31,33 @@ struct alignas(64) AlignedType {
   std::atomic<int> val;
 };
 
-void no_false_sharing_sum() {
-  std::vector<std::thread> threads(numRows);// 4 Threads
+void no_false_sharing() {
+  
   std::atomic<int> totalSum(0);
   std::vector<AlignedType> sumTotalVec(numRows);
 
-  int numThreads = numRows;
+  int numThreads = std::thread::hardware_concurrency();
+  std::vector<std::thread> threads(numThreads);
+
+  int rowsPerThread = numRows / numThreads;
 
   for (int i = 0; i < numThreads; ++i) {
-    threads[i] = std::thread([i, &sumTotalVec, &totalSum]() { sumRow(i, sumTotalVec[i].val); });
+    int startRow = i * rowsPerThread;
+    int endRow = (i == numThreads - 1) ? numRows - 1 : startRow + rowsPerThread - 1;
+    
+    threads[i] = std::thread([startRow, endRow, &totalSum]() {
+      sumRow(startRow, endRow, totalSum);
+    });
   }
 
   for (int i = 0; i < numThreads; ++i) {
     threads[i].join();
   }
-
-  for (int i = 0; i < numRows; ++i) {
-    totalSum+=sumTotalVec[i].val.load();
-    //std::cout << "Address of atomic<int> - " << &sumTotalVec[i] << '\n';
-  }
-
-  //std::cout << "Total sum: " << totalSum << std::endl;
 }
 
 static void noFalseSharingSolution(benchmark::State& s) {
   while (s.KeepRunning()) {
-    no_false_sharing_sum();
+    no_false_sharing();
   }
 }
 BENCHMARK(noFalseSharingSolution)->Unit(benchmark::kMillisecond);
