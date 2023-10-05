@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Compila el programa
+
+chmod +x run_CPP.sh
+
+# Verifica si la compilación fue exitosa
+if [ $? -eq 0 ]; then
+    ./run_CPP.sh
+else
+    echo "Error: La compilación ha fallado."
+fi
+
+# Compila el programa
+
+chmod +x run_C.sh
+
+# Verifica si la compilación fue exitosa
+if [ $? -eq 0 ]; then
+    ./run_C.sh
+else
+    echo "Error: La compilación ha fallado."
+fi
