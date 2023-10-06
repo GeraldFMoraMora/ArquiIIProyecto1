@@ -8,9 +8,7 @@
 #define numRows 100
 #define numCols 100
 
-struct AlignedRow {
-    int data[numCols];
-};
+int** matrix;
 
 struct AlignedType {
     atomic_int val;
@@ -22,14 +20,21 @@ struct ThreadArgs {
     atomic_int* resultRowSum;
 };
 
-struct AlignedRow matrix[numRows];
-
 void initializeMatrix() {
+    matrix = (int**)malloc(numRows * sizeof(int*));
     for (int i = 0; i < numRows; ++i) {
+        matrix[i] = (int*)malloc(numCols * sizeof(int));
         for (int j = 0; j < numCols; ++j) {
-            matrix[i].data[j] = 1;
+            matrix[i][j] = 1;
         }
     }
+}
+
+void freeMatrix() {
+    for (int i = 0; i < numRows; ++i) {
+        free(matrix[i]);
+    }
+    free(matrix);
 }
 
 void* sumRow(void* arg) {
@@ -38,7 +43,7 @@ void* sumRow(void* arg) {
     
     for (int i = args->startRow; i <= args->endRow; ++i) {
         for (int j = 0; j < numCols; ++j) {
-            sum += matrix[i].data[j];
+            sum += matrix[i][j];
         }
     }
 
@@ -88,6 +93,8 @@ int main() {
     double elapsed_time_ms = measure_time(no_false_sharing);
 
     printf("Elapsed time: %f ms\n", elapsed_time_ms);
+
+    freeMatrix(); // Liberar la memoria de la matriz
 
     return 0;
 }

@@ -2,46 +2,63 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
+#include <pthread.h>
 
 #define numRows 100
 #define numCols 100
 
-int matrix[numRows][numCols];
+struct Data {
+  int matrix[numRows][numCols];
+  // Añade padding para asegurarte de que cada hilo trabaje en una línea de caché diferente.
+  char padding[64];  // 64 bytes por línea de caché en muchos sistemas.
+};
 
-void sum_rows_single_thread() {
+// Utiliza una variable global compartida para almacenar la suma total.
+int totalSum = 0;
+
+// Función que realiza la suma de filas en la estructura de datos compartida.
+void* sum_rows(void* arg) {
+  struct Data* data = (struct Data*)arg;
   int rowSums[numRows];
 
   for (int i = 0; i < numRows; ++i) {
     rowSums[i] = 0;
     for (int j = 0; j < numCols; ++j) {
-      rowSums[i] += matrix[i][j];
+      rowSums[i] += data->matrix[i][j];
     }
   }
 
-  int totalSum = 0;
+  // Agrega la suma de esta fila a la suma total.
   for (int i = 0; i < numRows; ++i) {
-    totalSum += rowSums[i];
+    __sync_fetch_and_add(&totalSum, rowSums[i]);
   }
 
-  printf("Total sum (Single-threaded): %d\n", totalSum);
+  return NULL;
 }
 
 int main() {
-  // Initialize the matrix with values
+  struct Data data;
+  pthread_t threads[8];
+
+  // Inicializa la matriz con valores.
   for (int i = 0; i < numRows; ++i) {
     for (int j = 0; j < numCols; ++j) {
-      matrix[i][j] = 1;
+      data.matrix[i][j] = 1;
     }
   }
 
-  // Run the benchmark
-  clock_t start_time = clock();
-  sum_rows_single_thread();
-  clock_t end_time = clock();
-  
-  // Calculate and print the execution time
-  double execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-  printf("Execution time (Single-threaded): %f seconds\n", execution_time);
+  // Crea y ejecuta múltiples hilos que realizan la suma de filas.
+  for (int i = 0; i < 8; ++i) {
+    pthread_create(&threads[i], NULL, sum_rows, &data);
+  }
+
+  // Espera a que todos los hilos terminen.
+  for (int i = 0; i < 8; ++i) {
+    pthread_join(threads[i], NULL);
+  }
+
+  // Imprime el resultado total.
+  printf("Total sum: %d\n", totalSum);
 
   return 0;
 }

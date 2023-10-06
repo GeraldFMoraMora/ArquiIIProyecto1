@@ -53,7 +53,7 @@ void false_sharing() {
         totalSum += rowSums[i];
     }
 
-    printf("Total sum: %d\n", totalSum);
+    // No imprimas el resultado aquí, solo regresa el totalSum.
 }
 
 double measure_time(void (*function)()) {
@@ -77,11 +77,17 @@ int main() {
         }
     }
 
-    //false_sharing();
+    int numIterations = 100; // Número de iteraciones para medir el tiempo promedio
+    double totalElapsedTime = 0.0;
 
-    double elapsed_time = measure_time(false_sharing);
+    for (int i = 0; i < numIterations; ++i) {
+        double elapsed_time = measure_time(false_sharing);
+        totalElapsedTime += elapsed_time;
+    }
 
-    printf("Elapsed time: %f seconds\n", elapsed_time);
+    double averageElapsedTime = totalElapsedTime / numIterations;
+
+    printf("Average Elapsed Time: %f seconds\n", averageElapsedTime);
 
     return 0;
 }
