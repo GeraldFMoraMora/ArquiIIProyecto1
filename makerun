@@ -7,6 +7,7 @@ chmod +x run_CPP.sh
 # Verifica si la compilación fue exitosa
 if [ $? -eq 0 ]; then
     ./run_CPP.sh
+    python3 graphCPP.py
 else
     echo "Error: La compilación ha fallado."
 fi
@@ -18,6 +19,17 @@ chmod +x run_C.sh
 # Verifica si la compilación fue exitosa
 if [ $? -eq 0 ]; then
     ./run_C.sh
+    python3 graphC.py
 else
     echo "Error: La compilación ha fallado."
 fi
+
+rm -f cachegrind*
+rm -f mSST
+rm -f mSFS
+rm -f mSNFS1
+rm -f mSNFS2
+rm -f mSSTC
+rm -f mSFSC
+rm -f mSNFS1C
+rm -f mSNFS2C

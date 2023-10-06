@@ -13,6 +13,10 @@ for programa in "${programas[@]}"; do
         echo "Eliminando archivo de compilacion existente para $programa"
         rm "${programa}"
     fi
+    if [ -e "${programa}BenchCPP_results.txt" ]; then
+        echo "Eliminando archivo de benchmark existente para $programa"
+        rm "${programa}BenchCPP_results.txt"
+    fi
 done
 
 # Compila y ejecuta todos los programas
@@ -22,6 +26,8 @@ for programa in "${programas[@]}"; do
 
     # Verifica si la compilación fue exitosa
     if [ $? -eq 0 ]; then
+        echo "Guardando resultado de Benchmark para $programa..."
+        "./$programa"> "${programa}BenchCPP_results.txt"
         echo "Ejecutando Valgrind con Cachegrind para $programa..."
         valgrind --tool=cachegrind "./$programa" 2> "${programa}CPP_results.txt"
         

@@ -23,7 +23,7 @@ struct alignas(64) AlignedType {
 };
 
 void false_sharing_case2() {
-  std::vector<std::thread> threads(numRows);// 4 Threads
+  std::vector<std::thread> threads(numRows);
   std::atomic<int> totalSum(0);
   std::vector<AlignedType> sumTotalVec(numRows);
 

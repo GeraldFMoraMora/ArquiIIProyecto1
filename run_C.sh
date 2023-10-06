@@ -22,6 +22,8 @@ for programa in "${programas[@]}"; do
 
     # Verifica si la compilación fue exitosa
     if [ $? -eq 0 ]; then
+        echo "Guardando resultado de Benchmark para $programa..."
+        "./$programa"> "${programa}BenchC_results.txt"
         valgrind --tool=cachegrind "./$programa" 2> "${programa}C_results.txt"
         
     else
