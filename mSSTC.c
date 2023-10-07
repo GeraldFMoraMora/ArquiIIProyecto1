@@ -3,62 +3,77 @@
 #include <stdint.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
+#include <unistd.h>
 
 #define numRows 100
 #define numCols 100
 
 struct Data {
-  int matrix[numRows][numCols];
-  // Añade padding para asegurarte de que cada hilo trabaje en una línea de caché diferente.
-  char padding[64];  // 64 bytes por línea de caché en muchos sistemas.
+    int matrix[numRows][numCols];
+    char padding[64]; // 64 bytes por línea de caché en muchos sistemas.
 };
 
-// Utiliza una variable global compartida para almacenar la suma total.
 int totalSum = 0;
 
-// Función que realiza la suma de filas en la estructura de datos compartida.
 void* sum_rows(void* arg) {
-  struct Data* data = (struct Data*)arg;
-  int rowSums[numRows];
+    struct Data* data = (struct Data*)arg;
+    int rowSums[numRows];
 
-  for (int i = 0; i < numRows; ++i) {
-    rowSums[i] = 0;
-    for (int j = 0; j < numCols; ++j) {
-      rowSums[i] += data->matrix[i][j];
+    for (int i = 0; i < numRows; ++i) {
+        rowSums[i] = 0;
+        for (int j = 0; j < numCols; ++j) {
+            rowSums[i] += data->matrix[i][j];
+        }
     }
-  }
 
-  // Agrega la suma de esta fila a la suma total.
-  for (int i = 0; i < numRows; ++i) {
-    __sync_fetch_and_add(&totalSum, rowSums[i]);
-  }
+    for (int i = 0; i < numRows; ++i) {
+        __sync_fetch_and_add(&totalSum, rowSums[i]);
+    }
 
-  return NULL;
+    return NULL;
+}
+
+void print_system_info() {
+    printf("System Information:\n");
+
+    // Ejecutar el comando "lscpu" y mostrar la salida.
+    system("lscpu");
+
+    // Leer y mostrar la información de la CPU desde /proc/cpuinfo.
+    FILE* cpuinfo = fopen("/proc/cpuinfo", "r");
+    if (cpuinfo != NULL) {
+        char line[256];
+        while (fgets(line, sizeof(line), cpuinfo)) {
+            if (strstr(line, "cache size") || strstr(line, "core id") || strstr(line, "processor")) {
+                printf("%s", line);
+            }
+        }
+        fclose(cpuinfo);
+    }
 }
 
 int main() {
-  struct Data data;
-  pthread_t threads[8];
+    struct Data data;
+    pthread_t threads[8];
 
-  // Inicializa la matriz con valores.
-  for (int i = 0; i < numRows; ++i) {
-    for (int j = 0; j < numCols; ++j) {
-      data.matrix[i][j] = 1;
+    for (int i = 0; i < numRows; ++i) {
+        for (int j = 0; j < numCols; ++j) {
+            data.matrix[i][j] = 1;
+        }
     }
-  }
 
-  // Crea y ejecuta múltiples hilos que realizan la suma de filas.
-  for (int i = 0; i < 8; ++i) {
-    pthread_create(&threads[i], NULL, sum_rows, &data);
-  }
+    print_system_info();
 
-  // Espera a que todos los hilos terminen.
-  for (int i = 0; i < 8; ++i) {
-    pthread_join(threads[i], NULL);
-  }
+    for (int i = 0; i < 8; ++i) {
+        pthread_create(&threads[i], NULL, sum_rows, &data);
+    }
 
-  // Imprime el resultado total.
-  printf("Total sum: %d\n", totalSum);
+    for (int i = 0; i < 8; ++i) {
+        pthread_join(threads[i], NULL);
+    }
 
-  return 0;
+    // printf("Total sum: %d\n", totalSum);
+
+    return 0;
 }

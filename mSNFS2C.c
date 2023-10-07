@@ -4,6 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 #include <sys/sysinfo.h> // Para get_nprocs
+#include <string.h>
 
 #define numRows 100
 #define numCols 100
@@ -46,6 +47,25 @@ void* sumRow(void* arg) {
     return NULL;
 }
 
+void print_system_info() {
+    printf("System Information:\n");
+
+    // Ejecutar el comando "lscpu" y mostrar la salida.
+    system("lscpu");
+
+    // Leer y mostrar la información de la CPU desde /proc/cpuinfo.
+    FILE* cpuinfo = fopen("/proc/cpuinfo", "r");
+    if (cpuinfo != NULL) {
+        char line[256];
+        while (fgets(line, sizeof(line), cpuinfo)) {
+            if (strstr(line, "cache size") || strstr(line, "core id") || strstr(line, "processor")) {
+                printf("%s", line);
+            }
+        }
+        fclose(cpuinfo);
+    }
+}
+
 void no_false_sharing() {
     int numThreads = get_nprocs(); // Obtener el número de procesadores disponibles (Linux)
     pthread_t threads[numThreads];
@@ -68,6 +88,9 @@ void no_false_sharing() {
     }
 
     printf("Total sum: %d\n", atomic_load(&totalSum));
+
+    // Agregar información de hardware
+    print_system_info();
 }
 
 double measure_time(void (*function)()) {

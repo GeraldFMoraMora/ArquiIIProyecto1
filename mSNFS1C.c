@@ -4,6 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 #include <sys/sysinfo.h> // Para get_nprocs
+#include <string.h>
 
 #define numRows 100
 #define numCols 100
@@ -12,7 +13,7 @@ int** matrix;
 
 struct AlignedType {
     atomic_int val;
-};
+} __attribute__((aligned(64)));
 
 struct ThreadArgs {
     int startRow;
@@ -73,6 +74,21 @@ void no_false_sharing() {
     }
 
     printf("Total sum: %d\n", atomic_load(&totalSum));
+
+    // Agregar información de hardware
+    printf("System Information:\n");
+    system("lscpu");
+    
+    FILE* cpuinfo = fopen("/proc/cpuinfo", "r");
+    if (cpuinfo != NULL) {
+        char line[256];
+        while (fgets(line, sizeof(line), cpuinfo)) {
+            if (strstr(line, "cache size") || strstr(line, "core id") || strstr(line, "processor")) {
+                printf("%s", line);
+            }
+        }
+        fclose(cpuinfo);
+    }
 }
 
 double measure_time(void (*function)()) {

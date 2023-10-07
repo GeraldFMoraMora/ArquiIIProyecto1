@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <string.h>
+#include <unistd.h>
 
 #define numRows 100
 #define numCols 100
@@ -13,6 +15,26 @@ typedef struct {
     int endRow;
     int* resultRowSum;
 } ThreadArgs;
+
+// Variables globales para almacenar información del hardware
+int cacheLineSize = 0;
+int numCores = 0;
+int numThreads = 0;
+
+void get_hardware_info() {
+    // Obtener información de la línea de caché
+    FILE* cache_info_file = fopen("/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size", "r");
+    if (cache_info_file != NULL) {
+        fscanf(cache_info_file, "%d", &cacheLineSize);
+        fclose(cache_info_file);
+    }
+
+    // Obtener el número de núcleos
+    numCores = sysconf(_SC_NPROCESSORS_ONLN);
+
+    // Obtener el número de hilos
+    numThreads = sysconf(_SC_NPROCESSORS_CONF);
+}
 
 void* sumRow(void* args) {
     ThreadArgs* threadArgs = (ThreadArgs*)args;
@@ -29,11 +51,10 @@ void* sumRow(void* args) {
 }
 
 void false_sharing() {
-    pthread_t threads[numRows];
+    pthread_t threads[numThreads];
     int totalSum = 0;
     int rowSums[numRows];
 
-    int numThreads = numRows;
     int rowsPerThread = numRows / numThreads;
 
     for (int i = 0; i < numThreads; ++i) {
@@ -53,7 +74,6 @@ void false_sharing() {
         totalSum += rowSums[i];
     }
 
-    // No imprimas el resultado aquí, solo regresa el totalSum.
 }
 
 double measure_time(void (*function)()) {
@@ -76,6 +96,13 @@ int main() {
             matrix[i][j] = 1;
         }
     }
+
+    get_hardware_info(); // Recopilar información del hardware
+
+    // Imprimir información del hardware
+    printf("Cache Line Size: %d bytes\n", cacheLineSize);
+    printf("Number of Cores: %d\n", numCores);
+    printf("Number of Threads: %d\n", numThreads);
 
     int numIterations = 100; // Número de iteraciones para medir el tiempo promedio
     double totalElapsedTime = 0.0;
