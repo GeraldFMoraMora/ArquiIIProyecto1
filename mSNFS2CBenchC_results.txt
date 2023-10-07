@@ -1,2 +1,0 @@
-Total sum: 10000
-Elapsed time: 0.235000 ms
