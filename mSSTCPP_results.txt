@@ -1,0 +1,32 @@
+==9952== Cachegrind, a cache and branch-prediction profiler
+==9952== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==9952== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==9952== Command: ./mSST
+==9952== 
+--9952-- warning: L3 cache found, using its data for the LL simulation.
+2023-10-06T19:10:46-06:00
+Running ./mSST
+Run on (4 X 3500 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 4096 KiB (x1)
+Load Average: 2.43, 2.18, 1.51
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+==9952== 
+==9952== I   refs:      240,590,925
+==9952== I1  misses:          6,895
+==9952== LLi misses:          4,146
+==9952== I1  miss rate:        0.00%
+==9952== LLi miss rate:        0.00%
+==9952== 
+==9952== D   refs:      133,061,910  (83,819,381 rd   + 49,242,529 wr)
+==9952== D1  misses:        288,867  (   282,910 rd   +      5,957 wr)
+==9952== LLd misses:         11,841  (     9,230 rd   +      2,611 wr)
+==9952== D1  miss rate:         0.2% (       0.3%     +        0.0%  )
+==9952== LLd miss rate:         0.0% (       0.0%     +        0.0%  )
+==9952== 
+==9952== LL refs:           295,762  (   289,805 rd   +      5,957 wr)
+==9952== LL misses:          15,987  (    13,376 rd   +      2,611 wr)
+==9952== LL miss rate:          0.0% (       0.0%     +        0.0%  )

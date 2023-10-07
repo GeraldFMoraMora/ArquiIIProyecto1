@@ -1,0 +1,32 @@
+==100645== Cachegrind, a cache and branch-prediction profiler
+==100645== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==100645== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==100645== Command: ./mSNFS1
+==100645== 
+--100645-- warning: L3 cache found, using its data for the LL simulation.
+2023-10-06T19:10:54-06:00
+Running ./mSNFS1
+Run on (4 X 3500 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 4096 KiB (x1)
+Load Average: 2.59, 2.22, 1.53
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+==100645== 
+==100645== I   refs:      70,204,320
+==100645== I1  misses:        14,398
+==100645== LLi misses:         4,450
+==100645== I1  miss rate:       0.02%
+==100645== LLi miss rate:       0.01%
+==100645== 
+==100645== D   refs:      35,543,808  (22,425,491 rd   + 13,118,317 wr)
+==100645== D1  misses:       396,842  (   185,707 rd   +    211,135 wr)
+==100645== LLd misses:        14,754  (     9,364 rd   +      5,390 wr)
+==100645== D1  miss rate:        1.1% (       0.8%     +        1.6%  )
+==100645== LLd miss rate:        0.0% (       0.0%     +        0.0%  )
+==100645== 
+==100645== LL refs:          411,240  (   200,105 rd   +    211,135 wr)
+==100645== LL misses:         19,204  (    13,814 rd   +      5,390 wr)
+==100645== LL miss rate:         0.0% (       0.0%     +        0.0%  )

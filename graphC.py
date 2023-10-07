@@ -184,40 +184,40 @@ def performanceViewer():
     fig.canvas.set_window_title("Performance Viewer")
     fig.suptitle("Case C")
 
-    ax[0,0].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["I   refs"], valoresmSFSI["I   refs"], valoresmSNFS1I["I   refs"],valoresmSNFS2I["I   refs"]])
+    ax[0,0].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["I   refs"], valoresmSFSI["I   refs"], valoresmSNFS1I["I   refs"],valoresmSNFS2I["I   refs"]], color="#00FF00")
     ax[0,0].set_title("REFERENCIAS A INSTRUCCIONES")
     
-    ax[0,1].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["I1  misses"], valoresmSFSI["I1  misses"], valoresmSNFS1I["I1  misses"],valoresmSNFS2I["I1  misses"]])
+    ax[0,1].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["I1  misses"], valoresmSFSI["I1  misses"], valoresmSNFS1I["I1  misses"],valoresmSNFS2I["I1  misses"]], color="#00FF00")
     ax[0,1].set_title("FALLOS EN CACHE DE NIVEL 1 INST")
     
-    ax[0,2].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["LLi misses"], valoresmSFSI["LLi misses"], valoresmSNFS1I["LLi misses"],valoresmSNFS2I["LLi misses"]])
+    ax[0,2].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["LLi misses"], valoresmSFSI["LLi misses"], valoresmSNFS1I["LLi misses"],valoresmSNFS2I["LLi misses"]], color="#00FF00")
     ax[0,2].set_title("FALLOS EN CACHE DE ULTIMO NIVEL INST")
     
-    ax[0,3].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["I1  miss rate"], valoresmSFSI["I1  miss rate"], valoresmSNFS1I["I1  miss rate"],valoresmSNFS2I["I1  miss rate"]])
+    ax[0,3].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["I1  miss rate"], valoresmSFSI["I1  miss rate"], valoresmSNFS1I["I1  miss rate"],valoresmSNFS2I["I1  miss rate"]], color="#00FF00")
     ax[0,3].set_title("TAZA FALLOS NIVEL 1 INST")
     
-    ax[1,0].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["LLi miss rate"], valoresmSFSI["LLi miss rate"], valoresmSNFS1I["LLi miss rate"],valoresmSNFS2I["LLi miss rate"]])
+    ax[1,0].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTI["LLi miss rate"], valoresmSFSI["LLi miss rate"], valoresmSNFS1I["LLi miss rate"],valoresmSNFS2I["LLi miss rate"]], color="#00FF00")
     ax[1,0].set_title("TAZA DE FALLOS ULTIMO NIVEL INST")
     
-    ax[1,1].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["D   refs"], valoresmSFSD["D   refs"], valoresmSNFS1D["D   refs"],valoresmSNFS2D["D   refs"]])
+    ax[1,1].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["D   refs"], valoresmSFSD["D   refs"], valoresmSNFS1D["D   refs"],valoresmSNFS2D["D   refs"]], color="#00FF00")
     ax[1,1].set_title("REFERENCIAS A DATOS")
     
-    ax[1,2].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["D1  miss rate"], valoresmSFSD["D1  miss rate"], valoresmSNFS1D["D1  miss rate"],valoresmSNFS2D["D1  miss rate"]])
+    ax[1,2].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["D1  miss rate"], valoresmSFSD["D1  miss rate"], valoresmSNFS1D["D1  miss rate"],valoresmSNFS2D["D1  miss rate"]], color="#00FF00")
     ax[1,2].set_title("TAZA FALLOS NIVEL 1 DATOS")
     
-    ax[1,3].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["LLd miss rate"], valoresmSFSD["LLd miss rate"], valoresmSNFS1D["LLd miss rate"],valoresmSNFS2D["LLd miss rate"]])
+    ax[1,3].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["LLd miss rate"], valoresmSFSD["LLd miss rate"], valoresmSNFS1D["LLd miss rate"],valoresmSNFS2D["LLd miss rate"]], color="#00FF00")
     ax[1,3].set_title("TAZA DE FALLOS ULTIMO NIVEL DATOS")
     
-    ax[2,0].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["LLd misses"], valoresmSFSD["LLd misses"], valoresmSNFS1D["LLd misses"],valoresmSNFS2D["LLd misses"]])
+    ax[2,0].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTD["LLd misses"], valoresmSFSD["LLd misses"], valoresmSNFS1D["LLd misses"],valoresmSNFS2D["LLd misses"]], color="#00FF00")
     ax[2,0].set_title("FALLOS EN CACHE DE ULTIMO NIVEL DATOS")
     
-    ax[2,1].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTLL["LL refs"], valoresmSFSLL["LL refs"], valoresmSNFS1LL["LL refs"],valoresmSNFS2LL["LL refs"]])
+    ax[2,1].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTLL["LL refs"], valoresmSFSLL["LL refs"], valoresmSNFS1LL["LL refs"],valoresmSNFS2LL["LL refs"]], color="#00FF00")
     ax[2,1].set_title("REFERENCIAS EN ULTIMO NIVEL INST & DATOS")
     
-    ax[2,2].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTLL["LL misses"], valoresmSFSLL["LL misses"], valoresmSNFS1LL["LL misses"],valoresmSNFS2LL["LL misses"]])
+    ax[2,2].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTLL["LL misses"], valoresmSFSLL["LL misses"], valoresmSNFS1LL["LL misses"],valoresmSNFS2LL["LL misses"]], color="#00FF00")
     ax[2,2].set_title("FALLOS EN ULTIMO NIVEL INST & DATOS")
     
-    ax[2,3].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTLL["LL miss rate"], valoresmSFSLL["LL miss rate"], valoresmSNFS1LL["LL miss rate"],valoresmSNFS2LL["LL miss rate"]])
+    ax[2,3].bar(["MSST", "MSFS", "MSNFS1", "MSNFS2"], [valoresmSSTLL["LL miss rate"], valoresmSFSLL["LL miss rate"], valoresmSNFS1LL["LL miss rate"],valoresmSNFS2LL["LL miss rate"]], color="#00FF00")
     ax[2,3].set_title("TAZA DE FALLOS EN ULTIMO NIVEL INST & DATOS")
 
     plt.tight_layout()  
