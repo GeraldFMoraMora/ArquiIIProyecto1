@@ -8,9 +8,7 @@
 
 int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
 long cache_lsize = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
-
 unsigned int num_threads = std::thread::hardware_concurrency();
-
 const int int_per_line = cache_lsize / sizeof(std::atomic<int>);
 const int int_per_thread = int_per_line / num_threads;
 
@@ -20,23 +18,24 @@ void work(std::atomic<int>& a) {
   }
 }
 
-
 void diff_var() {
-  std::vector<std::atomic<int>> intVec(int_per_line);
-  std::vector<std::thread> threadVec;
+  const int num_elements = int_per_line * 2; // Doble el tamaño para aumentar el riesgo de false sharing
+  std::vector<std::atomic<int>> intVec(num_elements);
 
-  for (int i = 0; i < int_per_line; i++) {
-      intVec[i] = 0;
+  for (int i = 0; i < num_elements; i++) {
+    intVec[i] = 0;
   }
 
+  std::vector<std::thread> threadVec;
   for (int i = 0; i < num_threads; i++) {
-    threadVec.emplace_back([&]() { 
-      for(int j = 0; j < int_per_thread; j++){
-        work(intVec[i + j]); 
+    threadVec.emplace_back([&intVec, i]() {
+      for (int j = i * int_per_thread; j < (i + 1) * int_per_thread; j++) {
+        work(intVec[j]);
       }
     });
-  }  
+  }
 
+  // Join the threads
   for (std::thread& thread : threadVec) {
     thread.join();
   }

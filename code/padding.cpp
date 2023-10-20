@@ -8,9 +8,7 @@
 
 int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
 long cache_lsize = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
-
 unsigned int num_threads = std::thread::hardware_concurrency();
-
 const int int_per_line = cache_lsize / sizeof(std::atomic<int>);
 const int int_per_thread = int_per_line / num_threads;
 
@@ -37,7 +35,7 @@ void diff_line() {
       }
     });
   }
-
+  // Join the threads
   for (std::thread& thread : threadVec) {
     thread.join();
   }
